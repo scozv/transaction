@@ -1,6 +1,7 @@
 import play.api.test.WithApplication
 import models._
 import models.interop.HTTPResponseError
+import models.interop.payload.TransactionPayload
 import play.api.libs.json.Json
 
 class TransactionApplicationSpec extends CanFakeHTTP {
@@ -56,10 +57,8 @@ class TransactionApplicationSpec extends CanFakeHTTP {
     // 0. put tx with id 1
     val tx = txData.find(_._id == "1").get
     val response = http(routes.PUT_TX.withId("1"), payload = Json.toJson(tx))
-    val target = contentValidate[Transaction](response)
-    // 0. check status ok
-    target._id === "1"
-    target.tp === "cars"
+    // 0. check {status -> ok}
+    jsonValidate(response, "status", "ok")
   }
 
   def a2 = new WithApplication {
@@ -69,10 +68,9 @@ class TransactionApplicationSpec extends CanFakeHTTP {
     txData.filter(_._id > "1").foreach { tx =>
       // 0. put each tx
       val response = http(routes.PUT_TX.withId(tx._id), payload = Json.toJson(tx))
-      val target = contentValidate[Transaction](response)
-      // 0. check each status
-      target._id === tx._id
-      target.tp === tx.tp
+      // 0. check {status -> ok}
+      jsonValidate(response, "status", "ok")
+
     }
   }
 

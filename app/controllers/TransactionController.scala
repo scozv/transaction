@@ -2,6 +2,7 @@ package controllers
 
 import biz._
 import models._
+import models.interop.payload.TransactionPayload
 import models.interop.{HTTPResponse, HTTPResponseError}
 import org.joda.time.DateTime
 import play.api.mvc._
@@ -42,10 +43,10 @@ class TransactionController @Inject() (val reactiveMongoApi: ReactiveMongoApi)
     with CanCrossOrigin {
 
   def create(id: String) = Action.async(parse.json) { request =>
-    request.body.validate[Transaction]
+    request.body.validate[TransactionPayload]
       .map { payload =>
         TransactionBiz.one(db, id).flatMap {
-          case None => TransactionBiz.insert(db, payload.withId(id), id).map( tx => ResponseOk(Json.toJson(tx)))
+          case None => TransactionBiz.insert(db, payload.asTransaction(id), id).map(_ => Ok(Json.obj("status"->"ok")))
           case Some(_) => base.fs(ResponseError(HTTPResponseError.MONGO_ID_DUPLICATED))
         }
       }

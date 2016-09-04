@@ -53,6 +53,15 @@ class CanFakeHTTP extends CanConnectDB {
     target.get
   }
 
+  protected def jsonValidate[T](content: Future[Result], key: String, value: T)(implicit rds: Reads[T]): T = {
+    contentType(content) must beSome.which(_ == "application/json")
+    val json = contentAsJson(content)
+
+    val result = (json \ key).as[T]
+    result must be equals value
+    result
+  }
+
   protected def contentError(content: Future[Result], error: HTTPResponseError) = {
     contentType(content) must beSome.which(_ == "application/json")
     val json = contentAsJson(content)
