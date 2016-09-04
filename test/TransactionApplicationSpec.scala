@@ -135,26 +135,27 @@ class TransactionApplicationSpec extends CanFakeHTTP {
 
   def d1 = new WithApplication {
     // return 0 when :id not existing
-    contentValidate[Double](
-      http(routes.SUM.withId("1024"))) must be equalTo 0.0
+    jsonValidate[Double](http(routes.SUM.withId("1024")), "sum", 0.0)
   }
 
   def d2 = new WithApplication {
     // return valid sum calculation
 
     // 0. get the sum from RESTful api
-    val target = contentValidate[Double](http(routes.SUM.withId("2")))
+    val response = http(routes.SUM.withId("2"))
     // 0. sum the prepared data
     val origin = txData.filter(x => x._id == "2" || x.rootId == "2").map(_.amount).sum
     // 0. must be equal
-    target must be equalTo origin
+    jsonValidate[Double](response, "sum", origin)
   }
 
   def d3 = new WithApplication {
     // check sum of each :id
 
     List("1", "3", "4", "5").foreach { id =>
-      contentValidate[Double](http(routes.SUM.withId(id))) === txData.find(_._id == id).get.amount
+      val response = http(routes.SUM.withId(id))
+      val origin = txData.filter(x => x._id == id || x.rootId == id).map(_.amount).sum
+      jsonValidate[Double](response, "sum", origin)
     }
   }
 }
