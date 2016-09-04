@@ -73,4 +73,10 @@ class TransactionController @Inject() (val reactiveMongoApi: ReactiveMongoApi)
       .map(sum => Ok(Json.obj("sum" -> sum)))
       .map(corsGET)
   }
+
+  def index = Action.async { request =>
+    TransactionBiz.list(db)
+      .map(lst => Ok(Json.toJson(lst)))
+      .map(corsGET)
+  }
 }

@@ -5,7 +5,7 @@ import models.interop.CanBeJsonfied
 
 case class TransactionPayload(amount: Double, tp: String, parentId: Option[String] = None) {
 
-  def asTransaction(id: String) = models.Transaction(id, amount, tp, parentId.getOrElse(""))
+  def asTransaction(id: String) = models.Transaction(id, amount, tp, parentId)
 }
 
 object TransactionPayload extends CanBeJsonfied[TransactionPayload] {

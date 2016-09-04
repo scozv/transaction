@@ -21,6 +21,7 @@ POST           /inject/pingxx                             controllers.PaymentCon
 
 
 # Transaction Service
+GET            /transactionservice/transaction            controllers.TransactionController.index
 PUT            /transactionservice/transaction/:id        controllers.TransactionController.create(id: String)
 GET            /transactionservice/transaction/:id        controllers.TransactionController.get(id: String)
 GET            /transactionservice/types/:tp              controllers.TransactionController.list(tp: String)

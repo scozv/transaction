@@ -40,9 +40,9 @@ class TransactionApplicationSpec extends CanFakeHTTP {
   val txData =
     Transaction("1", 100, "cars") ::
     Transaction("2", 200, "food") ::
-    Transaction("3", 300, "cars", "2") ::
+    Transaction("3", 300, "cars", Some("2")) ::
     Transaction("4", 750, "digital") ::
-    Transaction("5", 1000, "shopping", "2") :: Nil
+    Transaction("5", 1000, "shopping", Some("2")) :: Nil
 
   object routes {
     val PUT_TX = Uri("PUT", "/transactionservice/transaction/:id", auth = false)
