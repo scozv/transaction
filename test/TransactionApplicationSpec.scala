@@ -109,7 +109,7 @@ class TransactionApplicationSpec extends CanFakeHTTP {
 
     // 0. get type/:tp
     val response = http(routes.GET_BY_TYPE.withId("cars", ":tp"))
-    val lst = contentValidate[Seq[String]](response)
+    val lst = jsonArray[String](response, List("1", "3"))
     lst must be size 2
     // 0. list.forAll (_.type must be same as :tp)
     lst.foreach { id =>
@@ -118,14 +118,18 @@ class TransactionApplicationSpec extends CanFakeHTTP {
   }
 
   def c2 = new WithApplication {
-    contentValidate[Seq[String]](
-      http(routes.GET_BY_TYPE.withId("food", ":tp"))) must be size 1
+    jsonArray[String](
+      http(routes.GET_BY_TYPE.withId("food", ":tp")), List("2")) must be size 1
 
-    contentValidate[Seq[String]](
-      http(routes.GET_BY_TYPE.withId("digital", ":tp"))) must be size 1
+    jsonArray[String](
+      http(routes.GET_BY_TYPE.withId("digital", ":tp")), List("4")) must be size 1
 
-    contentValidate[Seq[String]](
-      http(routes.GET_BY_TYPE.withId("shopping", ":tp"))) must be size 1
+    jsonArray[String](
+      http(routes.GET_BY_TYPE.withId("shopping", ":tp")), List("5")) must be size 1
+
+    // return [] when type is not existed
+    jsonArray[String](
+      http(routes.GET_BY_TYPE.withId("404", ":tp")), Nil) must beEmpty
   }
 
 

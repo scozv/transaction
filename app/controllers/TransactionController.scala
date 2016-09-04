@@ -63,7 +63,7 @@ class TransactionController @Inject() (val reactiveMongoApi: ReactiveMongoApi)
 
   def list(tp: String) = Action.async { request =>
     TransactionBiz.sequence[String](db, Json.obj("type" -> tp), "_id")
-      .map(lst => ResponseOk(Json.toJson(lst)))
+      .map(lst => Ok(Json.toJson(lst)))
       .map(corsGET)
   }
 
