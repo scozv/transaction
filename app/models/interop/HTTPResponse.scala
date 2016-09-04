@@ -1,7 +1,7 @@
 package models.interop
 
 import play.api.libs.json._
-import play.api.mvc.{RequestHeader, WrappedRequest}
+import play.api.mvc.RequestHeader
 
 class HTTPResponse
 (val data: JsValue,

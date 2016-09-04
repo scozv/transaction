@@ -1,11 +1,11 @@
 package controllers
 
-import models.interop.HTTPResponse
 import org.joda.time.DateTime
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc._
+
 import scala.concurrent.Future
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 class Application extends Controller with CanCrossOrigin with CanResponse {
 

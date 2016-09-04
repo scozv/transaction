@@ -1,14 +1,10 @@
-import biz.{AuthBiz, UserProfileBiz}
-import base.{modelStatus, mongo}
-import base.mongo.userFields.IdentityType
-import models._
-import models.interop.{HTTPResponse, HTTPResponseError, WeChatUserInfo}
-import org.specs2.runner._
+import models.interop.{HTTPResponse, HTTPResponseError}
 import org.junit.runner._
+import org.specs2.runner._
 import play.api.libs.json._
 import play.api.mvc.Result
-import play.api.test._
 import play.api.test.Helpers._
+import play.api.test._
 
 import scala.concurrent.Future
 
@@ -162,30 +158,5 @@ class CanFakeHTTP extends CanConnectDB {
     response.get
   }
 
-  protected object FakeUser {
-    val n = 5
 
-    val wechatOpenId1 = fakeWeChatId("kei930dke3k1ldlalei3")
-    val wechatOpenId2 = fakeWeChatId("mvkd74kdklsl162ldle7")
-    val wechatOpenId3 = fakeWeChatId("kekdikekl81kzzaaqkqk")
-    val wechatOpenId4 = fakeWeChatId("pqlldkozkqdqzjqkkaik")
-    val wechatOpenId5 = fakeWeChatId("wwkkwkkqooqokwkkekwk")
-
-
-    // do not test 3rd party interop call
-    private def fakeUserToken: String => String = (id: String) =>
-      waitIt(
-        UserProfileBiz
-          .createUser(db, User.asWeChatUser(WeChatUserInfo(id, "nickname", 1, "SH")))
-          .flatMap(AuthBiz.assignToken(db, _))
-      )
-
-    val token1 = fakeUserToken(wechatOpenId1)
-    val token2 = fakeUserToken(wechatOpenId2)
-    val token3 = fakeUserToken(wechatOpenId3)
-    val token4 = fakeUserToken(wechatOpenId4)
-    val token5 = fakeUserToken(wechatOpenId5)
-
-    val tokens = Seq(token1, token2, token3, token4, token5)
-  }
 }

@@ -1,6 +1,6 @@
 package models
 
-import models.interop.{CanBeHierarchicInstance, CanBeHierarchicObject, CanBeJsonfied}
+import models.interop.{CanBeHierarchicObject, CanBeJsonfied}
 
 case class Transaction(_id: Long, amount: Double, tp: String, rootId: Option[Long] = None) {
 
@@ -12,8 +12,8 @@ case class Transaction(_id: Long, amount: Double, tp: String, rootId: Option[Lon
 object Transaction extends CanBeJsonfied[Transaction] with CanBeHierarchicObject {
   override val rootFieldName = "parent_id"
 
-  import play.api.libs.json._
   import play.api.libs.functional.syntax._
+  import play.api.libs.json._
 
   implicit val writes = new OWrites[Transaction] {
     def writes(tx: Transaction) = Json.obj(

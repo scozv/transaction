@@ -4,45 +4,12 @@ import play.modules.reactivemongo.json.JSONSerializationPack
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.api.DB
 
-import scala.concurrent.{Future, ExecutionContext}
-
-/**
-  * TODO should be moved into /conf/application.conf
-  */
+import scala.concurrent.{ExecutionContext, Future}
 
 object mongo {
-  object collectionName {
-    val PRODUCTS = 'products
-    val GOODS = 'goods
-    val IMAGE = 'images
-    val USERS = 'users
-    val ADDRESS = 'addresses
-    val ORDERS = 'orders
-    val AUTHS = 'authentications
-  }
-
   object generalFields {
     val _id = "id"
     val hierarchicId = "rootId"
-  }
-
-  object userFields {
-    val CART = "shoppingCart"
-
-    object IdentityType extends Enumeration {
-      type IdentityType = Value
-      val WeChatOpenId, WeChatUniqueId, QQ, UserId = Value
-    }
-  }
-
-  object identitySize {
-    // yyMMddHHmmssSSS
-    val ORDER_TIME_STRING = 15
-    // random 000~999
-    val ORDER_SUFFIX = 3
-    val ORDER_IDENTITY = ORDER_TIME_STRING + ORDER_SUFFIX
-
-    val AUTH_TOKEN = 64
   }
 
   /**

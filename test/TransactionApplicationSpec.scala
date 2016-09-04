@@ -1,8 +1,7 @@
-import play.api.test.WithApplication
 import models._
 import models.interop.HTTPResponseError
-import models.interop.payload.TransactionPayload
 import play.api.libs.json.Json
+import play.api.test.WithApplication
 
 class TransactionApplicationSpec extends CanFakeHTTP {
   sequential

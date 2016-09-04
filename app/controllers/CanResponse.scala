@@ -1,6 +1,6 @@
 package controllers
 
-import models.interop.{HTTPResponseError, HTTPResponse}
+import models.interop.{HTTPResponse, HTTPResponseError}
 import play.api.libs.json._
 import play.api.mvc._
 

@@ -10,8 +10,8 @@ case class TransactionPayload(amount: Double, tp: String, parentId: Option[Long]
 
 object TransactionPayload extends CanBeJsonfied[TransactionPayload] {
 
-  import play.api.libs.json._
   import play.api.libs.functional.syntax._
+  import play.api.libs.json._
 
   implicit val writes = new OWrites[TransactionPayload] {
     def writes(tx: TransactionPayload) = Json.obj(

@@ -1,6 +1,5 @@
 package biz
 
-import models.interop.CanBeJsonfied
 import play.api.libs.json._
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.api._
@@ -47,11 +46,12 @@ object QueryBuilder {
   * 可被扩展用于链接数据库（第2个版本）
   */
 trait CanConnectDB2[T] {
+  import play.modules.reactivemongo.json.JSONSerializationPack
+  import reactivemongo.api._
   import reactivemongo.api.collections.GenericQueryBuilder
   import reactivemongo.api.commands._
-  import reactivemongo.api._
-  import play.modules.reactivemongo.json.JSONSerializationPack
-  import scala.concurrent.{Future, ExecutionContext}
+
+  import scala.concurrent.{ExecutionContext, Future}
 
   val pack = JSONSerializationPack
   type Self <: GenericQueryBuilder[pack.type]
