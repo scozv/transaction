@@ -62,6 +62,16 @@ class CanFakeHTTP extends CanConnectDB {
     result
   }
 
+  protected def jsonEmpty(content: Future[Result], nonExistingKey: Option[String] = None) = {
+    contentType(content) must beSome.which(_ == "application/json")
+    val json = contentAsJson(content)
+
+    nonExistingKey match {
+      case None => json.toString === "{}"
+      case Some(key) => (json \ key).asOpt[String] must beNone
+    }
+  }
+
   protected def contentError(content: Future[Result], error: HTTPResponseError) = {
     contentType(content) must beSome.which(_ == "application/json")
     val json = contentAsJson(content)

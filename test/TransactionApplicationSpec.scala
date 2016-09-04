@@ -89,19 +89,19 @@ class TransactionApplicationSpec extends CanFakeHTTP {
 
     // 0. get tx with id 1
     val response = http(routes.GET_TX.withId("1"))
-    val tx = contentValidate[Transaction](response)
     // 0. check properties of tx with id 1
-    tx._id === "1"
-    tx.tp === "cars"
+    jsonValidate(response, "type", "cars")
+    jsonValidate(response, "amount", 100)
+    jsonEmpty(response, Some("parent_id"))
   }
 
   def b2 = new WithApplication {
-    // return NOT_FOUND with non-existing tx id
+    // return {} with non-existing tx id
 
     // 0. get tx with id 1024 (non existing)
     val response = http(routes.GET_TX.withId("1024"))
     // 0. NOT_FOUND error
-    contentError(response, HTTPResponseError.MONGO_NOT_FOUND())
+    jsonEmpty(response)
   }
 
   def c1 = new WithApplication {
@@ -113,7 +113,7 @@ class TransactionApplicationSpec extends CanFakeHTTP {
     lst must be size 2
     // 0. list.forAll (_.type must be same as :tp)
     lst.foreach { id =>
-      contentValidate[Transaction](http(routes.GET_TX.withId(id))).tp === "cars"
+      jsonValidate(http(routes.GET_TX.withId(id)), "type", "cars")
     }
   }
 

@@ -56,8 +56,8 @@ class TransactionController @Inject() (val reactiveMongoApi: ReactiveMongoApi)
 
   def get(id: String) = Action.async { request =>
     TransactionBiz.one(db, id).map {
-      case None => ResponseError(HTTPResponseError.MONGO_NOT_FOUND(request))
-      case Some(tx) => ResponseOk(Json.toJson(tx))
+      case None => Ok(Json.obj())
+      case Some(tx) => Ok(Json.toJson(tx.asPayload))
     }.map (corsGET)
   }
 

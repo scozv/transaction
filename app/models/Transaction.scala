@@ -7,6 +7,7 @@ case class Transaction(_id: String, amount: Double, tp: String, rootId: String =
 
   val isRoot = rootId.isEmpty
   def withId(id: String) = Transaction(id, amount, tp, rootId)
+  def asPayload = interop.payload.TransactionPayload(amount, tp, if (rootId.isEmpty) None else Some(rootId))
 }
 
 object Transaction extends CanBeJsonfied[Transaction] with CanBeHierarchicObject {
