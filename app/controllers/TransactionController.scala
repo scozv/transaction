@@ -42,7 +42,7 @@ class TransactionController @Inject() (val reactiveMongoApi: ReactiveMongoApi)
     with CanResponse
     with CanCrossOrigin {
 
-  def create(id: String) = Action.async(parse.json) { request =>
+  def create(id: Long) = Action.async(parse.json) { request =>
     request.body.validate[TransactionPayload]
       .map { payload =>
         TransactionBiz.one(db, id).flatMap {
@@ -54,7 +54,7 @@ class TransactionController @Inject() (val reactiveMongoApi: ReactiveMongoApi)
       .map (corsPOST)
   }
 
-  def get(id: String) = Action.async { request =>
+  def get(id: Long) = Action.async { request =>
     TransactionBiz.one(db, id).map {
       case None => Ok(Json.obj())
       case Some(tx) => Ok(Json.toJson(tx.asPayload))
@@ -62,12 +62,12 @@ class TransactionController @Inject() (val reactiveMongoApi: ReactiveMongoApi)
   }
 
   def list(tp: String) = Action.async { request =>
-    TransactionBiz.sequence[String](db, Json.obj("type" -> tp), "_id")
+    TransactionBiz.sequence[Long](db, Json.obj("type" -> tp), "_id")
       .map(lst => Ok(Json.toJson(lst)))
       .map(corsGET)
   }
 
-  def sum(id: String) = Action.async { request =>
+  def sum(id: Long) = Action.async { request =>
     TransactionBiz.sequence[Double](db, QueryBuilder.or(QueryBuilder.withId(id), Json.obj("parent_id" -> id)), "amount")
       .map(lst => lst.sum)
       .map(sum => Ok(Json.obj("sum" -> sum)))

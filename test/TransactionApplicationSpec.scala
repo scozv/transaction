@@ -38,11 +38,11 @@ class TransactionApplicationSpec extends CanFakeHTTP {
 
   // prepare tx data with id from 1 to 5
   val txData =
-    Transaction("1", 100, "cars") ::
-    Transaction("2", 200, "food") ::
-    Transaction("3", 300, "cars", Some("2")) ::
-    Transaction("4", 750, "digital") ::
-    Transaction("5", 1000, "shopping", Some("2")) :: Nil
+    Transaction(100000001L, 100, "cars") ::
+    Transaction(100000002L, 200, "food") ::
+    Transaction(100000003L, 300, "cars", Some(100000002L)) ::
+    Transaction(100000004L, 750, "digital") ::
+    Transaction(100000005L, 1000, "shopping", Some(100000002L)) :: Nil
 
   object routes {
     val PUT_TX = Uri("PUT", "/transactionservice/transaction/:id", auth = false)
@@ -55,8 +55,8 @@ class TransactionApplicationSpec extends CanFakeHTTP {
     // create new tx via PUT
 
     // 0. put tx with id 1
-    val tx = txData.find(_._id == "1").get
-    val response = http(routes.PUT_TX.withId("1"), payload = Json.toJson(tx))
+    val tx = txData.find(_._id == 100000001L).get
+    val response = http(routes.PUT_TX.withId(tx._id), payload = Json.toJson(tx))
     // 0. check {status -> ok}
     jsonValidate(response, "status", "ok")
   }
@@ -65,7 +65,7 @@ class TransactionApplicationSpec extends CanFakeHTTP {
     // be able to create multi tx
 
     // 0. for 2 to 5
-    txData.filter(_._id > "1").foreach { tx =>
+    txData.filter(_._id > 100000001L).foreach { tx =>
       // 0. put each tx
       val response = http(routes.PUT_TX.withId(tx._id), payload = Json.toJson(tx))
       // 0. check {status -> ok}
@@ -78,8 +78,8 @@ class TransactionApplicationSpec extends CanFakeHTTP {
     // return error when duplicated tx creating
 
     // 0. put tx with id 1 (duplicated)
-    val tx = txData.find(_._id == "1").get
-    val response = http(routes.PUT_TX.withId("1"), payload = Json.toJson(tx))
+    val tx = txData.find(_._id == 100000001L).get
+    val response = http(routes.PUT_TX.withId(tx._id), payload = Json.toJson(tx))
     // 0. error return
     contentError(response, HTTPResponseError.MONGO_ID_DUPLICATED)
   }
@@ -88,7 +88,7 @@ class TransactionApplicationSpec extends CanFakeHTTP {
     // return specific tx via GET
 
     // 0. get tx with id 1
-    val response = http(routes.GET_TX.withId("1"))
+    val response = http(routes.GET_TX.withId(100000001L))
     // 0. check properties of tx with id 1
     jsonValidate(response, "type", "cars")
     jsonValidate(response, "amount", 100)
@@ -109,7 +109,7 @@ class TransactionApplicationSpec extends CanFakeHTTP {
 
     // 0. get type/:tp
     val response = http(routes.GET_BY_TYPE.withId("cars", ":tp"))
-    val lst = jsonArray[String](response, List("1", "3"))
+    val lst = jsonArray[Long](response, List(100000001L, 100000003L))
     lst must be size 2
     // 0. list.forAll (_.type must be same as :tp)
     lst.foreach { id =>
@@ -118,17 +118,17 @@ class TransactionApplicationSpec extends CanFakeHTTP {
   }
 
   def c2 = new WithApplication {
-    jsonArray[String](
-      http(routes.GET_BY_TYPE.withId("food", ":tp")), List("2")) must be size 1
+    jsonArray[Long](
+      http(routes.GET_BY_TYPE.withId("food", ":tp")), List(100000002L)) must be size 1
 
-    jsonArray[String](
-      http(routes.GET_BY_TYPE.withId("digital", ":tp")), List("4")) must be size 1
+    jsonArray[Long](
+      http(routes.GET_BY_TYPE.withId("digital", ":tp")), List(100000004L)) must be size 1
 
-    jsonArray[String](
-      http(routes.GET_BY_TYPE.withId("shopping", ":tp")), List("5")) must be size 1
+    jsonArray[Long](
+      http(routes.GET_BY_TYPE.withId("shopping", ":tp")), List(100000005L)) must be size 1
 
     // return [] when type is not existed
-    jsonArray[String](
+    jsonArray[Long](
       http(routes.GET_BY_TYPE.withId("404", ":tp")), Nil) must beEmpty
   }
 
@@ -142,9 +142,9 @@ class TransactionApplicationSpec extends CanFakeHTTP {
     // return valid sum calculation
 
     // 0. get the sum from RESTful api
-    val response = http(routes.SUM.withId("2"))
+    val response = http(routes.SUM.withId(100000002L))
     // 0. sum the prepared data
-    val origin = txData.filter(x => x._id == "2" || x.rootId == "2").map(_.amount).sum
+    val origin = txData.filter(x => x._id == 100000001L || x.rootId.exists(_ == 100000001L)).map(_.amount).sum
     // 0. must be equal
     jsonValidate[Double](response, "sum", origin)
   }
@@ -152,9 +152,9 @@ class TransactionApplicationSpec extends CanFakeHTTP {
   def d3 = new WithApplication {
     // check sum of each :id
 
-    List("1", "3", "4", "5").foreach { id =>
+    List(100000001L, 100000003L, 100000004L, 100000005L).foreach { id =>
       val response = http(routes.SUM.withId(id))
-      val origin = txData.filter(x => x._id == id || x.rootId == id).map(_.amount).sum
+      val origin = txData.filter(x => x._id == id || x.rootId.exists(_ == id)).map(_.amount).sum
       jsonValidate[Double](response, "sum", origin)
     }
   }

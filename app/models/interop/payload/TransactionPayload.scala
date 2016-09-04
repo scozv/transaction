@@ -3,9 +3,9 @@ package models.interop.payload
 
 import models.interop.CanBeJsonfied
 
-case class TransactionPayload(amount: Double, tp: String, parentId: Option[String] = None) {
+case class TransactionPayload(amount: Double, tp: String, parentId: Option[Long] = None) {
 
-  def asTransaction(id: String) = models.Transaction(id, amount, tp, parentId)
+  def asTransaction(id: Long) = models.Transaction(id, amount, tp, parentId)
 }
 
 object TransactionPayload extends CanBeJsonfied[TransactionPayload] {
@@ -23,6 +23,6 @@ object TransactionPayload extends CanBeJsonfied[TransactionPayload] {
   implicit val reads: Reads[TransactionPayload] = (
       (__ \ "amount").read[Double] and
       (__ \ "type").read[String] and
-      (__ \ "parent_id").readNullable[String]
+      (__ \ "parent_id").readNullable[Long]
     ) (TransactionPayload.apply _)
 }

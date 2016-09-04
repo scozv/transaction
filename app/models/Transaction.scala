@@ -2,10 +2,10 @@ package models
 
 import models.interop.{CanBeHierarchicInstance, CanBeHierarchicObject, CanBeJsonfied}
 
-case class Transaction(_id: String, amount: Double, tp: String, rootId: Option[String] = None) {
+case class Transaction(_id: Long, amount: Double, tp: String, rootId: Option[Long] = None) {
 
   val isRoot = rootId.isEmpty
-  def withId(id: String) = Transaction(id, amount, tp, rootId)
+  def withId(id: Long) = Transaction(id, amount, tp, rootId)
   def asPayload = interop.payload.TransactionPayload(amount, tp, rootId)
 }
 
@@ -18,6 +18,7 @@ object Transaction extends CanBeJsonfied[Transaction] with CanBeHierarchicObject
   implicit val writes = new OWrites[Transaction] {
     def writes(tx: Transaction) = Json.obj(
       "_id" -> tx._id,
+      "transaction_id" -> tx._id,
       "amount" -> tx.amount,
       "type" -> tx.tp
     ) ++ {
@@ -27,10 +28,10 @@ object Transaction extends CanBeJsonfied[Transaction] with CanBeHierarchicObject
   }
 
   implicit val reads: Reads[Transaction] = (
-    (__ \ "_id").read[String] and
+      (__ \ "_id").read[Long] and
       (__ \ "amount").read[Double] and
       (__ \ "type").read[String] and
-      (__ \ rootFieldName).readNullable[String]
+      (__ \ rootFieldName).readNullable[Long]
     ) (Transaction.apply _)
 }
 

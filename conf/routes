@@ -22,7 +22,7 @@ POST           /inject/pingxx                             controllers.PaymentCon
 
 # Transaction Service
 GET            /transactionservice/transaction            controllers.TransactionController.index
-PUT            /transactionservice/transaction/:id        controllers.TransactionController.create(id: String)
-GET            /transactionservice/transaction/:id        controllers.TransactionController.get(id: String)
+PUT            /transactionservice/transaction/:id        controllers.TransactionController.create(id: Long)
+GET            /transactionservice/transaction/:id        controllers.TransactionController.get(id: Long)
 GET            /transactionservice/types/:tp              controllers.TransactionController.list(tp: String)
-GET            /transactionservice/sum/:id                controllers.TransactionController.sum(id: String)
+GET            /transactionservice/sum/:id                controllers.TransactionController.sum(id: Long)

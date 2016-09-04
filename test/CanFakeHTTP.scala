@@ -27,6 +27,7 @@ class CanFakeHTTP extends CanConnectDB {
 
     def withId(id: String, identityName: String = ":id"): Uri =
       Uri(method, uri.replace(identityName, id), auth)
+    def withId(id: Long): Uri = withId(id.toString)
   }
 
   /**
