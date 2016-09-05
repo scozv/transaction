@@ -8,28 +8,18 @@ lazy val root = (project in file("."))
 scalaVersion := "2.11.6"
 
 resolvers ++= Seq(
-  "RoundEights" at "http://maven.spikemark.net/roundeights",
   Resolver.jcenterRepo,
   Resolver.bintrayRepo("scalaz", "releases")
 )
 
 libraryDependencies ++= Seq(
   jdbc,
-  // anorm,
   cache,
   ws,
-  // specs2 % Test,
-  // "org.specs2" %% "specs2-core" % "3.6.5" % "test",
   "javax.inject" % "javax.inject" % "1",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.7.play24",
-  // "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.50.0" % Test,
   "com.github.athieriot" %% "specs2-embedmongo" % "0.7.0",
-  "org.scalikejdbc" %% "scalikejdbc" % "2.2.8",
-  // "com.h2database" % "h2" % "1.4.189",
-  "mysql" % "mysql-connector-java" % "5.1.36",
-  "ch.qos.logback" % "logback-classic" % "1.1.3",
-  "Pingplusplus" % "pingpp-java" % "2.1.1",
-  "com.roundeights" %% "hasher" % "1.2.0"
+  "ch.qos.logback" % "logback-classic" % "1.1.3"
 )
 
 scalacOptions += "-feature"
