@@ -1,5 +1,4 @@
 import models._
-import models.interop.HTTPResponseError
 import play.api.libs.json.Json
 import play.api.test.WithApplication
 
@@ -80,7 +79,7 @@ class TransactionApplicationSpec extends CanFakeHTTP {
     val tx = txData.find(_._id == 100000001L).get
     val response = http(routes.PUT_TX.withId(tx._id), payload = Json.toJson(tx))
     // 0. error return
-    contentError(response, HTTPResponseError.MONGO_ID_DUPLICATED)
+    jsonValidate(response, "status", "data _id duplicated")
   }
 
   def b1 = new WithApplication {

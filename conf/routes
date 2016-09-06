@@ -1,5 +1,5 @@
-GET            /                                          controllers.Application.index
-OPTIONS        /*path                                     controllers.CORSController.preFlight(path)
+GET            /                                          controllers.TransactionController.meta
+OPTIONS        /*path                                     controllers.TransactionController.preFlight(path)
 
 # Transaction Service
 GET            /transactionservice/transaction            controllers.TransactionController.index

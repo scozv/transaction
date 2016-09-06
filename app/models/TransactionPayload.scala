@@ -1,14 +1,11 @@
-
-package models.interop.payload
-
-import models.interop.CanBeJsonfied
+package models
 
 case class TransactionPayload(amount: Double, tp: String, parentId: Option[Long] = None) {
 
   def asTransaction(id: Long) = models.Transaction(id, amount, tp, parentId)
 }
 
-object TransactionPayload extends CanBeJsonfied[TransactionPayload] {
+object TransactionPayload {
 
   import play.api.libs.functional.syntax._
   import play.api.libs.json._

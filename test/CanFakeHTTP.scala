@@ -1,4 +1,3 @@
-import models.interop.{HTTPResponse, HTTPResponseError}
 import org.junit.runner._
 import org.specs2.runner._
 import play.api.libs.json._
@@ -24,30 +23,6 @@ class CanFakeHTTP extends CanConnectDB {
     def withId(id: String, identityName: String = ":id"): Uri =
       Uri(method, uri.replace(identityName, id), auth)
     def withId(id: Long): Uri = withId(id.toString)
-  }
-
-  /**
-    * 校验ResponseResult是否符合我们的models.HTTPResponse类型
-    * 并从其中Extract出我们关注的data
-    */
-  protected def contentValidate[T](content: Future[Result])(implicit rds: Reads[T]): T = {
-    contentAsString(content) must contain("{\"ok\":")
-    contentType(content) must beSome.which(_ == "application/json")
-    val json = contentAsJson(content)
-
-    (json \ "error").as[String] === ""
-    (json \ "ok").as[Boolean] must beTrue
-    (json \ "data").asOpt[JsValue] must beSome[JsValue]
-
-    (json \ "status").asOpt[String] must beNone
-    (json \ "message").asOpt[String] must beNone
-
-    val response = json.validate[HTTPResponse].get
-    response.ok must beTrue
-
-    val target = response.data.validate[T]
-    target must beAnInstanceOf[JsSuccess[T]]
-    target.get
   }
 
   protected def jsonValidate[T](content: Future[Result], key: String, value: T)(implicit rds: Reads[T]): T = {
@@ -79,54 +54,7 @@ class CanFakeHTTP extends CanConnectDB {
     result.get
   }
 
-  protected def contentError(content: Future[Result], error: HTTPResponseError) = {
-    contentType(content) must beSome.which(_ == "application/json")
-    val json = contentAsJson(content)
-
-    (json \ "ok").as[Boolean] must beFalse
-    (json \ "error").as[String] must not be empty
-    // TODO (json \ "data").asOpt[JsValue] must beNone
-
-    (json \ "status").asOpt[String] must beNone
-    (json \ "message").asOpt[String] must beNone
-
-    val response = json.validate[HTTPResponse].get
-    response.ok must beFalse
-    response.error._id must be equalTo error._id
-  }
-
-  lazy val TOKEN_QUERY_KEY = base.runtime.HTTP_AUTH2_HEADER_KEY
-
-  protected def buildQuery(query: Map[String, Seq[String]]): String = {
-    val helper = scala.collection.mutable.ListBuffer[(String, String)]()
-    query.foreach{ case (queryKey, v) =>
-      v.foreach { queryValue =>
-        helper.append(queryKey -> queryValue)
-      }
-    }
-
-    helper.map{case (k, v) => k.concat("=").concat(v)} mkString "&"
-  }
-
-  protected def withQueries[A](http: FakeRequest[A], query: Map[String, Seq[String]]): FakeRequest[A] = {
-    val targetQuery = base.seqMerge[(String, Seq[String])](
-      http.queryString, query, key = _._1,
-      mergeItem = (x, y) => {x._1 -> (x._2 ++ y._2)})
-    FakeRequest(
-      method = http.method,
-      uri = http.path.concat("?").concat(buildQuery(targetQuery.toMap)),
-      headers = http.headers,
-      body = http.body,
-      remoteAddress = http.remoteAddress,
-      version = http.version,
-      id = http.id,
-      tags = http.tags,
-      secure = http.secure
-    )
-  }
-
-  protected def withQuery[A](http: FakeRequest[A], query: Map[String, String]): FakeRequest[A] =
-    withQueries(http, query.map{case (k, v) => k -> Seq(v)})
+  lazy val TOKEN_QUERY_KEY = "*"
 
   protected def http(uri: Uri, payload: JsValue = JsNull, token: String = "") = uri match {
     case Uri("GET", link, true) => getAuthed(link, token)

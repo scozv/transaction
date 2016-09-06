@@ -1,16 +1,14 @@
 package models
 
-import models.interop.{CanBeHierarchicObject, CanBeJsonfied}
-
 case class Transaction(_id: Long, amount: Double, tp: String, rootId: Option[Long] = None) {
 
   val isRoot = rootId.isEmpty
   def withId(id: Long) = Transaction(id, amount, tp, rootId)
-  def asPayload = interop.payload.TransactionPayload(amount, tp, rootId)
+  def asPayload = TransactionPayload(amount, tp, rootId)
 }
 
-object Transaction extends CanBeJsonfied[Transaction] with CanBeHierarchicObject {
-  override val rootFieldName = "parent_id"
+object Transaction {
+  val rootFieldName = "parent_id"
 
   import play.api.libs.functional.syntax._
   import play.api.libs.json._
